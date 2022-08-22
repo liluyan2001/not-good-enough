@@ -1,0 +1,195 @@
+# <center>排序方法</center>
+
+[TOC]
+
+## <center>插入排序</center>
+
+### <center>思路</center>
+
+>	将第一待排序序列第一个元素看做一个有序序列，把第二个元素到最后一个元素当成是未排序序列。
+>
+>	从头到尾依次扫描未排序序列，将扫描到的每个元素插入有序序列的适当位置。（如果待插入的元素与有序序列中的某个元素相等，则将待插入元素插入到相等元素的后面）  
+>
+>	类似打扑克整理牌
+>
+>	复杂度为n^2
+
+### **<center>代码</center>**
+
+```c++
+   void insert(int array[],int len) {//插入排序
+    int i, j, key;
+    for (i = 1; i < len; i++) {
+        j = i - 1;
+        key = array[i];
+        while ((j >= 0) && (key< array[j])) {
+            array[j + 1] = array[j];
+            j--;
+        }
+        array[j + 1] = key;
+    }
+}
+```
+
+## <center>冒泡排序</center>
+
+### <center>思路</center>
+
+>	  比较相邻的元素。如果第一个比第二个大，就交换他们两个。
+>	  对每一对相邻元素作同样的工作，从开始第一对到结尾的最后一对。这步做完后，最后的元素会是最大的数。
+>	  针对所有的元素重复以上的步骤，除了最后一个。
+>	  持续每次对越来越少的元素重复上面的步骤，直到没有任何一对数字需要比较
+>
+>	  复杂度为n^2
+
+### **<center>代码</center>**
+
+```c++
+void bubble(int array[], int len) {//冒泡排序
+    for (int i = 0; i < len-1; i++) {
+        for (int j = 0; j < len - 1 - i; j++) {
+            if (array[j] > array[j + 1])
+                swap(array[j], array[j+1]);
+        }
+    }
+}
+```
+
+## <center>快速排序</center>
+
+### <center>思路</center>
+
+>	也被称之为填坑排序
+>
+>	首先先选一个轴值（也就是对比值），这样就等于挖了一个坑等待被填上。
+>
+>	然后有两个指针分别从数组头和尾移动，先看尾部指针，若指针指的值大于轴值，则只移动尾部指针；若指针指的值小于轴值，则把该值填到左边的坑里。换头部边指针
+>
+>	头部指针同理，直到头部指针与尾部指针相遇，结束。
+>
+>	复杂度为 nlogn
+
+### **<center>代码</center>**
+
+```c++
+void quick_sort(int array[],int left,int right) {//快速排序
+    if(right<=left) return;
+    int key = array[left];
+    int l = left;
+    int r = right;
+    while (l < r) {
+        while (l<r && array[r]>key) {
+            r--;
+        }
+        if (l < r) {
+            array[l] = array[r];
+            l++;
+        }
+
+        while (l < r && array[l] < key) {
+            l++;
+        }
+        if (l < r) {
+            array[r] = array[l];
+            r--;
+        }
+    }
+    array[l] = key;
+    quick_sort(array,left, l - 1);
+    quick_sort(array, r + 1, right);
+
+}
+int selectpivot(int left, int right) {//挑选比较值的位置，比如随机，开头，中间等
+    return (left + right) / 2;
+}
+
+int Partition(int array[], int left, int right) {
+    int l = left;//l是左指针
+    int r = right;//r是右指针
+    int temp = array[r];//轴值存在临时变量（上面已经将轴值移动到了最右边）
+    while (l != r) {
+        while (array[l] <= temp && r > l)
+            l++;
+        if (l < r) {
+            array[r] = array[l];
+            r--;
+        }//r指针向左移动，越过那些大于轴值得记录，直到找到一个小于轴值的记录
+        while (array[r] >= temp && r > l)
+            r--;
+        if (r > l) {
+            array[l] = array[r];
+            l++;
+        }
+    }//end while
+    array[l] = temp;
+    return l;
+
+}
+
+
+void quicksort(int array[], int left, int right) {
+    if (right <= left) return;//0或1不需要排序
+    int pivot = selectpivot(left, right);
+    swap(array[pivot], array[right]);//分割前先将轴值放到末端
+    pivot = Partition(array, left, right);//分割后轴值已经到了正确位置
+    quicksort(array, left, pivot - 1);
+    quicksort(array, pivot + 1, right);
+}
+```
+
+## <center>递归分组合并排序</center>
+
+### <center>思路</center>
+
+>	一般数组长度为2的次方。
+>
+>	通过递归进行分组，分成两两一组，然后进行归并。
+>
+>	归并的时候依次比较两个数组，谁大谁放到辅助数组里面，直到某个数组比较完成，这样还未完成的数组就直接排到辅助数组后面就可以。
+>
+>	  复杂度为nlogn
+
+### **<center>代码</center>**
+
+```c++
+void Merge(int a[], int low, int mid, int high)// 合并函数
+{
+    int j, k, h;
+    int b[100] = { 0 };//辅助数组
+    j = low;
+    h = mid + 1;
+    k = low;
+    while (j <= mid && h <= high)	// 将左右两端数据进行比较，放入辅助数组b中
+    {
+        if (a[j] < a[h])
+            b[k++] = a[j++];
+        else
+            b[k++] = a[h++];
+    }
+    // 将剩余的数据加入到辅助数组中
+    while (j <= mid)
+    {
+        b[k++] = a[j++];
+    }
+    while (h <= high)
+    {
+        b[k++] = a[h++];
+    }
+    for (k = low; k <= high; k++)// 将辅助数组的数据复制到原数组的对应位置上
+    {
+        a[k] = b[k];
+    }
+}
+
+void MergeSort(int array[], int low, int high)	// 递归分组函数
+{
+    if (low < high)
+    {
+        int mid = (low + high) / 2;
+        MergeSort(array, low, mid);
+        MergeSort(array, mid + 1, high);
+        Merge(array, low, mid, high);// 调用Merge函数，合并两组数据 
+    }
+}
+```
+
